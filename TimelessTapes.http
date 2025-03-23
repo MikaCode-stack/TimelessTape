@@ -1,0 +1,6 @@
+@TimelessTapes_HostAddress = http://localhost:5228
+
+GET {{TimelessTapes_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
