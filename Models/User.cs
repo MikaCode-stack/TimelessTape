@@ -19,6 +19,16 @@ namespace TimelessTapes.Models
         [Required]
         public string AccessType { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public ICollection<AdminLog> AdminLog { get; set; } // One user can have multiple admin logs
+        public ICollection<CustomerReview> CustomerReviews { get; set; }
+        public ICollection<Payment> Payments { get; set; }
+        public ICollection<Refund> Refunds { get; set; }
+        public ICollection<Transaction> Transaction { get; set; }
+
     }
 
 }
+    
+
+
