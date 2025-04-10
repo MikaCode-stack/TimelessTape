@@ -23,6 +23,7 @@ namespace TimelessTapes.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public required string AccessType { get; set; }
+        public object? PasswordHash { get; internal set; }
 
         // register a new user
         public static async Task<int> Register(DBHandler context, string name, string email, string password, string accessType)

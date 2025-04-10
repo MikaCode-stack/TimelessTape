@@ -8,6 +8,7 @@ namespace TimelessTapes.Data
         public DBHandler(DbContextOptions<DBHandler> options) : base(options) { }
         public DbSet<User> Users { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Video> Videos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
