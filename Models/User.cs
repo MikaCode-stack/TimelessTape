@@ -11,13 +11,13 @@ namespace TimelessTapes.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
         [Required]
-        public string Name { get; set; }
+        public required string Name { get; set; }
         [Required, EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
         [Required]
         public int PasswordHash { get; set; }
         [Required]
-        public string AccessType { get; set; }
+        public required string AccessType { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 

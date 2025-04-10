@@ -1,39 +1,29 @@
 using Microsoft.EntityFrameworkCore;
 using TimelessTapes.Data;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
+// Add DbContext with SQL Server connection
 builder.Services.AddDbContext<DBHandler>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TimelessTapeDb")));
 builder.Services.AddControllers();
-    
-WebApplication app = builder.Build();
 
-app.MapControllers();
-app.Run();
-
-/* Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Add Swagger for development
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Enable Swagger UI for development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection();  // Enforce HTTPS
+app.UseAuthorization();     // Use Authorization middleware (if applicable)
 
-app.UseAuthorization();
+app.MapControllers();  // Map controllers to endpoints
 
-app.MapControllers();
-
-app.Run();
-*/
+app.Run();  // Run the application
