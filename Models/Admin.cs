@@ -7,15 +7,26 @@ namespace TimelessTapes.Models
     public class Admin : User
     {
 
-        public async Task AddVideo(DBHandler context, string title, string genre, decimal price, int availableCopies)
+        public async Task AddVideo(DBHandler context, string titleId, string titleType, string primaryTitle,
+             string director, string cast, int? releaseYear, string rating, string duration,
+             string genres, string description, decimal price, int copies)
         {
             var newVideo = new Title
             {
-                PrimaryTitle = title,
-                Genres = genre,
+                TitleId = titleId,
+                TitleType = titleType,
+                PrimaryTitle = primaryTitle,
+                Director = director,
+                Cast = cast,
+                ReleaseYear = releaseYear,
+                Rating = rating,
+                Duration = duration,
+                Genres = genres,
+                Description = description,
                 Price = price,
-                Copies = availableCopies
+                Copies = copies
             };
+
 
             context.Titles.Add(newVideo);
 
@@ -26,6 +37,7 @@ namespace TimelessTapes.Models
         {
 
             var videoToRemove = await context.Titles.FindAsync(videoId);
+
             if (videoToRemove != null)
             {
                 context.Titles.Remove(videoToRemove);

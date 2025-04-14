@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TimelessTapes.Data;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-
+//Users model. Ensures that the user has a unique ID, name, email, password hash and salt, access type, and created date.
 namespace TimelessTapes.Models
 {
     public class User
@@ -24,10 +24,11 @@ namespace TimelessTapes.Models
         public byte[] PasswordHash { get; set; }
         [Required]
         public byte[] PasswordSalt { get; set; }
-        public string AccessType { get; set; } = "User";
+        public string AccessType { get; set; } = "Customer";
         public DateTime CreatedAt { get; set; }
 
-        public ICollection<AdminLog> AdminLog { get; set; } // One user can have multiple admin logs
+        // Navigation properties for Foreign Keys
+        public ICollection<AdminLog> AdminLog { get; set; } 
         public ICollection<CustomerReview> CustomerReviews { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Refund> Refunds { get; set; }

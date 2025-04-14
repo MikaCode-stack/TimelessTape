@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TimelessTapes.Models;
-
+//Context to create Tables and map them in the database
 namespace TimelessTapes.Data
 {
     public class DBHandler : DbContext
@@ -103,6 +103,8 @@ namespace TimelessTapes.Data
             modelBuilder.Entity<Latefee>().Property(l => l.FeeDate).HasColumnName("feeDate");
             modelBuilder.Entity<Latefee>().Property(l => l.Paid).HasColumnName("paid");
             modelBuilder.Entity<Latefee>().HasOne(l => l.Transaction).WithMany(t => t.Latefees).HasForeignKey(l => l.TransactionId).OnDelete(DeleteBehavior.NoAction); // Changed to NoAction
+
+
         }
     }
 }

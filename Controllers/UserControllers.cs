@@ -4,7 +4,7 @@ using TimelessTapes.Data;
 using TimelessTapes.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+//Controller for user registration and login
 namespace TimelessTapes.Controllers
 {
     [Route("api/[controller]")]
@@ -28,7 +28,7 @@ namespace TimelessTapes.Controllers
             // Check if the email already exists
             if (await _context.Users.AnyAsync(u => u.Email == model.Email))
                 return BadRequest("Email is already in use.");
-            // Create password hash and salt
+            // Create password hash and salt as this is a secure way to store passwords in the database
             PasswordHasher.CreatePasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
             // Create user entity
             var user = new User
@@ -41,10 +41,10 @@ namespace TimelessTapes.Controllers
             // Add user to the database
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            // For security reasons, do not return password hash and salt
+            // For security reasons,cpassword hash and salt are not returned, only confirmation message is returned
             return Ok(new { Message = "User registered successfully." });
         }
-        // POST: api/user/login
+        // POST: api/user/login => Allows user to login and save session data for the logged-in user
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
@@ -60,8 +60,21 @@ namespace TimelessTapes.Controllers
             // Verify the password
             if (!PasswordHasher.VerifyPasswordHash(model.Password, user.PasswordHash, user.PasswordSalt))
                 return Unauthorized("Invalid email or password.");
-            // TODO: Generate JWT or other token as needed
+            
+            HttpContext.Session.SetString("UserId", user.UserId.ToString());
+            HttpContext.Session.SetString("AccessType", user.AccessType);
+
+
             return Ok(new { Message = "User logged in successfully." });
         }
+
+        // POST: api/user/logout => Allows user to logout and clear session data
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return Ok("Logged out successfully.");
+        }
+
     }
 }

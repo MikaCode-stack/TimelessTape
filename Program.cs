@@ -3,12 +3,14 @@ using TimelessTapes.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add DbContext with SQL Server connection
+// Adding DbContext with SQL Server connection
 builder.Services.AddDbContext<DBHandler>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TimelessTapeDb")));
 builder.Services.AddControllers();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
 
-// Add Swagger for development
+// Adding Swagger for development
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -22,7 +24,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();  // Enforce HTTPS
-app.UseAuthorization();     // Use Authorization middleware (if applicable)
+app.UseSession();  // Enable session state
+app.UseAuthorization();     // Use Authorization middleware
 
 app.MapControllers();  // Map controllers to endpoints
 

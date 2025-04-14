@@ -32,6 +32,8 @@ namespace TimelessTapes.Models
         public Title Title { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Latefee> Latefees { get; set; }
+
+
         
 
     }
