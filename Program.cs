@@ -1,14 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using TimelessTapes.Data;
+using TimelessTapes.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adding DbContext with SQL Server connection
 builder.Services.AddDbContext<DBHandler>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TimelessTapeDb")));
+
+//Adding controllers and session storage
 builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
+
+//Adding services
+builder.Services.AddScoped<TransactionService>();
+
 
 // Adding Swagger for development
 builder.Services.AddEndpointsApiExplorer();

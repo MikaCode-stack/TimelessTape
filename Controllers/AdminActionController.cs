@@ -49,7 +49,21 @@ namespace TimelessTapes.Controllers
                 _context.Titles.Add(newVideo);
                 await _context.SaveChangesAsync();
 
+                
+
+                // Log the actions admin during admin session
+                var log = new AdminLog
+                {
+                    AdminId = int.Parse(userId),
+                    Action = $"Added video '{newVideo.PrimaryTitle}' (ID: {newVideo.TitleId})",
+                    ActionDate = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                _context.AdminLogs.Add(log);
+                await _context.SaveChangesAsync();
                 return Ok("Video added successfully.");
+
             }
             catch (Exception ex)
             {
@@ -58,7 +72,7 @@ namespace TimelessTapes.Controllers
         }
 
 
-        //
+        //Allows admin to remove a video from the database/system
         [HttpDelete("remove-video")]
         public async Task<IActionResult> RemoveVideo([FromBody] RemoveVideoDTO dto)
         {
@@ -79,6 +93,18 @@ namespace TimelessTapes.Controllers
             }
 
             _context.Titles.Remove(video);
+
+            var log = new AdminLog
+            {
+                AdminId = int.Parse(userId),
+                Action = $"Removed video '{video.PrimaryTitle}' (ID: {video.TitleId})",
+                ActionDate = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            //logs admin action again
+            _context.AdminLogs.Add(log);
+
             await _context.SaveChangesAsync();
 
             return Ok("Video removed.");

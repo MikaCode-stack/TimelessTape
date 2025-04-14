@@ -4,6 +4,7 @@ using TimelessTapes.Data;
 using TimelessTapes.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Azure.Core;
 //Controller for user registration and login
 namespace TimelessTapes.Controllers
 {
@@ -31,15 +32,17 @@ namespace TimelessTapes.Controllers
             // Create password hash and salt as this is a secure way to store passwords in the database
             PasswordHasher.CreatePasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
             // Create user entity
-            var user = new User
+            var customer = new Customer
             {
-               Name = model.Name,
+                Name = model.Name,
                 Email = model.Email,
                 PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt
+                PasswordSalt = passwordSalt,
+                CreatedAt = DateTime.UtcNow,
+               
             };
             // Add user to the database
-            _context.Users.Add(user);
+            _context.Users.Add(customer);
             await _context.SaveChangesAsync();
             // For security reasons,cpassword hash and salt are not returned, only confirmation message is returned
             return Ok(new { Message = "User registered successfully." });

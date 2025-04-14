@@ -9,6 +9,11 @@ namespace TimelessTapes.Models
 {
     public class Customer : User
     {
+        public Customer()
+        {
+            AccessType = "Customer";
+        }
+
         public async Task<string> RentVideo(DBHandler context, string titleId)
         {
             var video = await context.Titles.FindAsync(titleId);
@@ -19,7 +24,7 @@ namespace TimelessTapes.Models
                     TitleId = titleId,
                     CustomerId = this.UserId,
                     RentalDate = DateTime.UtcNow,
-                    Status = "Rented"
+                    Status = Models.Transaction.RentalStatus.Rented
                 };
 
                 context.Transactions.Add(transaction);
@@ -36,7 +41,7 @@ namespace TimelessTapes.Models
         public async Task<string> ReturnVideo(DBHandler context, string titleId)
         {
             var transaction = await context.Transactions
-                .Where(t => t.TitleId == titleId && t.CustomerId == this.UserId && t.Status == "Rented")
+                .Where(t => t.TitleId == titleId && t.CustomerId == this.UserId && t.Status == Models.Transaction.RentalStatus.Returned)
                 .OrderByDescending(t => t.RentalDate)
                 .FirstOrDefaultAsync();
 
@@ -46,7 +51,7 @@ namespace TimelessTapes.Models
                 if (video != null)
                 {
                     video.Copies += 1;
-                    transaction.Status = "Returned";
+                    transaction.Status = Models.Transaction.RentalStatus.Returned;
                     transaction.ReturnDate = DateTime.UtcNow;
                     await context.SaveChangesAsync();
                     return "Video returned successfully.";

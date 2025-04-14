@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TimelessTapes.Data;
 
@@ -11,9 +12,11 @@ using TimelessTapes.Data;
 namespace TimelessTapes.Migrations
 {
     [DbContext(typeof(DBHandler))]
-    partial class DBHandlerModelSnapshot : ModelSnapshot
+    [Migration("20250414213453_DiscriminatorColumn")]
+    partial class DiscriminatorColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,6 +313,11 @@ namespace TimelessTapes.Migrations
                         .HasColumnName("createdAt")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -331,20 +339,11 @@ namespace TimelessTapes.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("accessType")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
                     b.HasKey("UserId");
 
-                    b.ToTable("Users", null, t =>
-                        {
-                            t.Property("accessType")
-                                .HasColumnName("accessType1");
-                        });
+                    b.ToTable("Users", (string)null);
 
-                    b.HasDiscriminator<string>("accessType").HasValue("User");
+                    b.HasDiscriminator().HasValue("User");
 
                     b.UseTphMappingStrategy();
                 });
@@ -352,12 +351,6 @@ namespace TimelessTapes.Migrations
             modelBuilder.Entity("TimelessTapes.Models.Customer", b =>
                 {
                     b.HasBaseType("TimelessTapes.Models.User");
-
-                    b.ToTable("Users", t =>
-                        {
-                            t.Property("accessType")
-                                .HasColumnName("accessType1");
-                        });
 
                     b.HasDiscriminator().HasValue("Customer");
                 });

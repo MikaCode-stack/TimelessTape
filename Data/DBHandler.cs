@@ -15,6 +15,7 @@ namespace TimelessTapes.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Latefee> LateFees { get; set; }
         public DbSet<Refund> Refunds { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +28,10 @@ namespace TimelessTapes.Data
             modelBuilder.Entity<User>().Property(u => u.PasswordHash).HasColumnName("passwordHash");//Has to encrypt for dynamic data saving
             modelBuilder.Entity<User>().Property(u => u.AccessType).HasColumnName("accessType");//Admin or Customer
             modelBuilder.Entity<User>().Property(u => u.CreatedAt).HasColumnName("createdAt").HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();//Gets the current date and time(Timestamp)
+            modelBuilder.Entity<User>()
+                .HasDiscriminator<string>("accessType")
+                .HasValue<User>("User")
+                .HasValue<Customer>("Customer");
 
             // AdminLogs Table
             modelBuilder.Entity<AdminLog>().ToTable("AdminLogs").HasKey(a => a.LogId);

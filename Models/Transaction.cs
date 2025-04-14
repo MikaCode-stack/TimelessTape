@@ -1,6 +1,8 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TimelessTapes.Data;
+using TimelessTapes.Controllers;
 
 namespace TimelessTapes.Models
 {
@@ -17,9 +19,13 @@ namespace TimelessTapes.Models
         [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal Price { get; set; }
-        [Required]
-        [StringLength(10)]
-        public string Status { get; set; }
+        public enum RentalStatus { Rented, Returned, Overdue }
+        public RentalStatus Status { get; set; }
+
+        public  int DaysRented = 7;
+
+        public  double ExcessFines = 5.00;
+
         [Required]
         [Column(TypeName = "date")]
         public DateTime RentalDate { get; set; }
@@ -33,8 +39,6 @@ namespace TimelessTapes.Models
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Latefee> Latefees { get; set; }
 
-
         
-
     }
 }
