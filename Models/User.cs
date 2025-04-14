@@ -10,14 +10,19 @@ namespace TimelessTapes.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
-        [Required]
+        
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
         public string Name { get; set; }
-        [Required, EmailAddress]
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address format.")]
+        [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters.")]
         public string Email { get; set; }
         [Required]
-        public int PasswordHash { get; set; }
+        public byte[] PasswordHash { get; set; }
         [Required]
-        public string AccessType { get; set; }
+        public byte[] PasswordSalt { get; set; }
+        public string AccessType { get; set; } = "User";
         public DateTime CreatedAt { get; set; }
 
         public ICollection<AdminLog> AdminLog { get; set; } // One user can have multiple admin logs

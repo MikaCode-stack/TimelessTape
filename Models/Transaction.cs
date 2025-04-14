@@ -10,7 +10,7 @@ namespace TimelessTapes.Models
         [Required]
         public int CustomerId { get; set; }
         [Required]
-        public int VideoId { get; set; }
+        public string TitleId { get; set; }
         [Required]
         public decimal Price { get; set; }
         [Required]
@@ -20,7 +20,7 @@ namespace TimelessTapes.Models
 
         // Foreign Keys
         public User Customer { get; set; }
-        public Video Video { get; set; }
+        public Title Title { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Latefee> Latefees { get; set; }
         

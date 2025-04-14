@@ -8,7 +8,7 @@ namespace TimelessTapes.Models
         [Key]
         public int LogId { get; set; }
         [Required]
-        public string AdminId { get; set; }
+        public int AdminId { get; set; }
         [Required]
         public string Action { get; set; }
         public DateTime ActionDate { get; set; }

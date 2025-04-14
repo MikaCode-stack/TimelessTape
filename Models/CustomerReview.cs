@@ -9,11 +9,11 @@ namespace TimelessTapes.Models
         public int ReviewId { get; set; }
         [Required]
         public int CustomerId { get; set; }
-        public int VideoId { get; set; }
+        public string TitleId { get; set; }
         public string ReviewText { get; set; }
         public int Rating { get; set; }
         //Foreign Keys navigation properties
-        public Video Video { get; set; }
+        public Title Title { get; set; }
         public User User { get; set; }
     }
 }
