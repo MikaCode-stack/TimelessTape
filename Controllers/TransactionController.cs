@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -71,7 +72,9 @@ public class TransactionsController : ControllerBase
     public async Task<IActionResult> ProcessPayment(int customerID, decimal amount)
     {
         var customerTransactions = await _context.Transactions
-            .Where(t => t.CustomerID == customerID && t.Status == "Active")
+
+            .Where(t => t.CustomerId == customerID && t.Status == "Active")
+
             .ToListAsync();
 
         if (!customerTransactions.Any())
@@ -94,7 +97,9 @@ public class TransactionsController : ControllerBase
     public async Task<IActionResult> CalculateFines(int customerID)
     {
         var overdueTransactions = await _context.Transactions
-            .Where(t => t.CustomerID == customerID && t.ReturnDate == null && t.RentalDate < DateTime.UtcNow.AddDays(-7))
+
+            .Where(t => t.CustomerId == customerID && t.ReturnDate == null && t.RentalDate < DateTime.UtcNow.AddDays(-7))
+
             .ToListAsync();
 
         if (!overdueTransactions.Any())
@@ -106,4 +111,6 @@ public class TransactionsController : ControllerBase
 
         return Ok(new { message = "Fines calculated.", totalFine = fineAmount });
     }
+
 }
+

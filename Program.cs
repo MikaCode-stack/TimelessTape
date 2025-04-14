@@ -26,4 +26,6 @@ app.UseAuthorization();     // Use Authorization middleware (if applicable)
 
 app.MapControllers();  // Map controllers to endpoints
 
-app.Run();  // Run the application
+
+app.Run(); // Run the application
+

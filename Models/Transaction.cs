@@ -1,4 +1,4 @@
-using System;
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,27 +8,31 @@ namespace TimelessTapes.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int TransactionID { get; set; }  
 
+        public int TransactionId { get; set; }  // Primary Key
         [Required]
-        public int CustomerID { get; set; } 
-
+        public int CustomerId { get; set; }
         [Required]
-        public int VideoID { get; set; }  
-
+        public string TitleId { get; set; }
         [Required]
         [Column(TypeName = "decimal(10,2)")]
-        public decimal Price { get; set; } = 0.00m;  
-
+        public decimal Price { get; set; }
         [Required]
         [StringLength(10)]
-        public string Status { get; set; } = "Active";  
-
+        public string Status { get; set; }
         [Required]
         [Column(TypeName = "date")]
-        public DateTime RentalDate { get; set; }  
+        public DateTime RentalDate { get; set; }
 
         [Column(TypeName = "date")]
-        public DateTime? ReturnDate { get; set; }  
+        public DateTime? ReturnDate { get; set; }
+
+        // Foreign Keys
+        public User Customer { get; set; }
+        public Title Title { get; set; }
+        public ICollection<Payment> Payments { get; set; }
+        public ICollection<Latefee> Latefees { get; set; }
+        
+
     }
 }

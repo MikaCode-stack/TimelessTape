@@ -1,25 +1,29 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TimelessTapes.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace TimelessTapes.Models
 {
     public class Customer : User
     {
-        public async Task<string> RentVideo(DBHandler context, int videoId)
+        public async Task<string> RentVideo(DBHandler context, string titleId)
         {
-            var video = await context.Videos.FindAsync(videoId);
-            if (video != null && video.Available)
+            var video = await context.Titles.FindAsync(titleId);
+            if (video != null && video.Copies > 0)
             {
                 var transaction = new Transaction
                 {
-                    VideoID = videoId,
-                    CustomerID = this.UserId,
+                    TitleId = titleId,
+                    CustomerId = this.UserId,
                     RentalDate = DateTime.UtcNow,
                     Status = "Rented"
                 };
 
                 context.Transactions.Add(transaction);
-                video.Available = false;
+                video.Copies -= 1;
                 await context.SaveChangesAsync();
                 return "Video rented successfully.";
             }
@@ -29,22 +33,27 @@ namespace TimelessTapes.Models
             }
         }
 
-        public async Task<string> ReturnVideo(DBHandler context, int videoId)
+        public async Task<string> ReturnVideo(DBHandler context, string titleId)
         {
-            var transaction = context.Transactions.FirstOrDefault(t => t.VideoID == videoId && t.CustomerID == this.UserId && t.Status == "Rented");
+            var transaction = await context.Transactions
+                .Where(t => t.TitleId == titleId && t.CustomerId == this.UserId && t.Status == "Rented")
+                .OrderByDescending(t => t.RentalDate)
+                .FirstOrDefaultAsync();
+
             if (transaction != null)
             {
-                var video = await context.Videos.FindAsync(videoId);
+                var video = await context.Titles.FindAsync(titleId);
                 if (video != null)
                 {
-                    video.Available = true;
+                    video.Copies += 1;
                     transaction.Status = "Returned";
+                    transaction.ReturnDate = DateTime.UtcNow;
                     await context.SaveChangesAsync();
                     return "Video returned successfully.";
                 }
                 else
                 {
-                    return "Video not found";
+                    return "Video not found.";
                 }
             }
             else
@@ -53,14 +62,12 @@ namespace TimelessTapes.Models
             }
         }
 
-        public List<Transaction> MyTransactions(DBHandler context)
+        public async Task<List<Transaction>> MyTransactionsAsync(DBHandler context)
         {
-            return context.Transactions.Where(t => t.CustomerID == this.UserId).OrderBy(t => t.RentalDate).ToList();
-        }
-
-        internal Task<string> RentVideo(DBHandler context, object videoId)
-        {
-            throw new NotImplementedException();
+            return await context.Transactions
+                .Where(t => t.CustomerId == this.UserId)
+                .OrderByDescending(t => t.RentalDate)
+                .ToListAsync();
         }
     }
 }
