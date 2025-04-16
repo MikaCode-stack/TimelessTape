@@ -4,10 +4,14 @@ A video rental system like you've never seen before!
 Thank you for stopping by! We hope you enjoy exploring our C# application.
 We’re a group of university students who developed this project as part of our second-year module. 
 Using Agile methodologies and conducting weekly SCRUM meetings, we worked collaboratively with clearly defined roles:
-🧠 Team Leader
-📝 Secretary
-💻 Two Developers
-🧪 One Tester
+
+- 🧠 Team Leader
+
+- 📝 Secretary
+
+- 💻 Two Developers
+
+- 🧪 One Tester
 
 Feel free to explore the code, leave feedback, or even fork and build your own version of the app!
 
