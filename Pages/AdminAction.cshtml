@@ -1,0 +1,38 @@
+﻿@page
+@model TimelessTapes.Pages.AdminActionModel
+@{
+    ViewData["Title"] = "Admin Actions";
+}
+
+<h2>Add a Video</h2>
+<form method="post" asp-page-handler="Add">
+    @Html.AntiForgeryToken()
+    <input asp-for="AddVideo.TitleId" type="text" placeholder="Title ID" />
+    <input asp-for="AddVideo.TitleType" placeholder="Type (e.g. Movie)" />
+    <input asp-for="AddVideo.PrimaryTitle" placeholder="Title" />
+    <input asp-for="AddVideo.Director" placeholder="Director" />
+    <input asp-for="AddVideo.Cast" placeholder="Cast" />
+    <input asp-for="AddVideo.ReleaseYear" placeholder="Year" />
+    <input asp-for="AddVideo.Rating" placeholder="Rating" />
+    <input asp-for="AddVideo.Duration" placeholder="Duration (minutes)" />
+    <input asp-for="AddVideo.Genres" placeholder="Genres (comma-separated)" />
+    <input asp-for="AddVideo.Description" placeholder="Description" />
+    <input asp-for="AddVideo.Price" placeholder="Price" />
+    <input asp-for="AddVideo.Copies" placeholder="Copies" />
+    <button type="submit">Add Video</button>
+</form>
+
+<hr />
+
+<h2>Remove a Video</h2>
+<form method="post" asp-page-handler="Remove">
+    @Html.AntiForgeryToken()
+    <input asp-for="RemoveVideo.TitleId" type="text" placeholder="Title ID" />
+    <input asp-for="RemoveVideo.PrimaryTitle" placeholder="Title" />
+    <button type="submit">Remove Video</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <p>@Model.Message</p>
+}

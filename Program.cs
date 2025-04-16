@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using TimelessTapes.Data;
-using TimelessTapes.Services;
+using TimelessTapes.Models;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,34 +10,39 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DBHandler>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TimelessTapeDb")));
 
-//Adding controllers and session storage
+// Add other necessary services
 builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
-//Adding services
-builder.Services.AddScoped<TransactionService>();
-
-
-// Adding Swagger for development
+//Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new() { Title = "TimelessTapes API", Version = "v1" });
+});
 
 WebApplication app = builder.Build();
 
-// Enable Swagger UI for development
+
+app.UseRouting();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TimelessTapes API v1");
+        c.RoutePrefix = "api/docs"; // Custom Swagger path instead of root
+    });
 }
 
-app.UseHttpsRedirection();  // Enforce HTTPS
-app.UseSession();  // Enable session state
-app.UseAuthorization();     // Use Authorization middleware
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseSession(); // Enable session state
+app.UseAuthorization(); // Authorization middleware
 
-app.MapControllers();  // Map controllers to endpoints
+app.MapControllers();
 
+app.MapFallbackToFile("index.html");
 
-app.Run(); // Run the application
+app.Run();
 

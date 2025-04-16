@@ -24,36 +24,38 @@ namespace TimelessTapes.Controllers
         [HttpPost("rent")]
         public async Task<IActionResult> RentVideo([FromBody] RentRequest request)
         {
-            var customer = await _context.Customers
-        .FirstOrDefaultAsync(c => c.UserId == request.CustomerId);
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdStr)) return Unauthorized("Login required");
 
-            if (customer == null)
-            {
-                return NotFound("Customer not found.");
-            }
+            int userId = int.Parse(userIdStr);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null) return NotFound("User not found.");
 
-            var resultMessage = await customer.RentVideo(_context, request.TitleId);
-            return Ok(resultMessage);
+            var resultMessage = await _transactionService.RentVideoAsync(_context, user, request.TitleId);
+            return Ok(new { message = resultMessage });
         }
 
         // Return video endpoint
         [HttpPost("return")]
         public async Task<IActionResult> ReturnVideo([FromBody] ReturnRequest request)
         {
-            var customer = await _context.Users.FindAsync(request.CustomerId) as Customer;
-            if (customer == null) return NotFound("Customer not found.");
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdStr)) return Unauthorized("Login required");
 
-            // Assuming ReturnVideo logic is handled in the Customer class or by the TransactionService
-            var result = await _transactionService.ReturnVideoAsync(_context, customer, request.TitleId);
-            return Ok(result);
+            int userId = int.Parse(userIdStr);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound("User not found.");
+
+            var result = await _transactionService.ReturnVideoAsync(_context, user, request.TitleId);
+            return Ok(new { message = result });
         }
 
-        // Get all transactions of a customer
-        [HttpGet("customer/{customerId}")]
-        public IActionResult GetCustomerTransactions(int customerId)
+        // Get all transactions of a user
+        [HttpGet("user/{userId}")]
+        public IActionResult GetUserTransactions(int userId)
         {
             var transactions = _context.Transactions
-                .Where(t => t.CustomerId == customerId)
+                .Where(t => t.CustomerId == userId)
                 .OrderBy(t => t.RentalDate)
                 .ToList();
 
@@ -71,26 +73,18 @@ namespace TimelessTapes.Controllers
             return Ok(receipt);
         }
 
-        // Get fines for a customer
-        [HttpGet("{customerId}/fines")]
-        public IActionResult GetFines(int customerId)
+
+
+        // RentRequest class to hold the rent video request data
+        public class RentRequest
         {
-            var fine = TransactionService.CalculateFines(_context, customerId);
-            return Ok(new { customerId, totalFine = fine });
+            public string TitleId { get; set; }
         }
-    }
 
-    // RentRequest class to hold the rent video request data
-    public class RentRequest
-    {
-        public int CustomerId { get; set; }
-        public string TitleId { get; set; }
-    }
-
-    // ReturnRequest class to hold the return video request data
-    public class ReturnRequest
-    {
-        public int CustomerId { get; set; }
-        public string TitleId { get; set; }
+        // ReturnRequest class to hold the return video request data
+        public class ReturnRequest
+        {
+            public string TitleId { get; set; }
+        }
     }
 }

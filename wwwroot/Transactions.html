@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Management</title>
+</head>
+<body>
+    <h1>Transaction Management for Timeless Tapes</h1>
+
+    <!-- Rent Video Form -->
+    <h3>Rent a Video</h3>
+    <form id="rentForm">
+        <label for="titleId">Title ID</label>
+        <input type="text" id="rentTitleId" required>
+        <button type="submit">Rent Video</button>
+    </form>
+    <div id="rentStatus"></div>
+
+    <!-- Return Video Form -->
+    <h3>Return a Video</h3>
+    <form id="returnForm">
+        <label for="returnTitleId">Title ID</label>
+        <input type="text" id="returnTitleId" required>
+        <button type="submit">Return Video</button>
+    </form>
+    <div id="returnStatus"></div>
+    <script src="TransactionScript.js"></script>
+</body>
+</html>

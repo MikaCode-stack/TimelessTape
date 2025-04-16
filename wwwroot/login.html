@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Login</title>
+</head>
+<body>
+
+    <h2>User Login</h2>
+
+    <form id="loginForm">
+        <div>
+            <label for="Email">Email:</label>
+            <input type="email" id="Email" name="Email" required />
+        </div>
+
+        <div>
+            <label for="Password">Password:</label>
+            <input type="password" id="Password" name="Password" required />
+        </div>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p id="message"></p>
+
+    <script>
+    document.getElementById("loginForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const loginDTO = {
+            Email: document.getElementById("Email").value,
+            Password: document.getElementById("Password").value
+        };
+
+        try {
+            const response = await fetch("https://localhost:7027/api/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include", 
+                body: JSON.stringify(loginDTO)
+            });
+
+            const messageElement = document.getElementById("message");
+
+            if (response.ok) {
+                const user = await response.json();
+
+                // Store session values in localStorage or cookies
+                localStorage.setItem("UserId", user.userId);
+                localStorage.setItem("AccessType", user.accessType);
+
+                console.log("Access Type (Trimmed and Cleaned):", user.accessType.trim());
+                console.log("Access Type Length:", user.accessType.trim().length);
+
+                
+                const accessType = user.accessType?.trim()
+                if (user.accessType === "Admin") {
+                    console.log("Redirecting to admin.html");
+                    window.location.href = "admin.html";
+                } else {
+                    console.log("Redirecting to navigation.html");
+                    window.location.href = "navigation.html";
+                }
+
+            } else {
+                alert("Login failed.");
+            }
+            
+        } catch (err) {
+            document.getElementById("message").textContent = "Error: " + err.message;
+        }
+    });
+    </script>
+
+</body>
+</html>

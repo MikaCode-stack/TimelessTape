@@ -18,7 +18,7 @@ namespace TimelessTapes.Controllers
         }
         // POST: api/adminaction/add-video Allows admin to upload a new video
         [HttpPost("AddVideo")]
-        public async Task<IActionResult> AddVideo([FromBody] AddVideoDto videoDto)
+        public async Task<IActionResult> AddVideo([FromBody] AddVideoDTO videoDto)
         {
             var userId = HttpContext.Session.GetString("UserId");
             var accessType = HttpContext.Session.GetString("AccessType");
@@ -28,6 +28,10 @@ namespace TimelessTapes.Controllers
                 return StatusCode(403, "Only admins can perform this action.");
             }
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
                 var newVideo = new Title
@@ -79,10 +83,10 @@ namespace TimelessTapes.Controllers
             var userId = HttpContext.Session.GetString("UserId");
             var accessType = HttpContext.Session.GetString("AccessType");
 
-            if (string.IsNullOrEmpty(userId) || accessType != "Admin")
+            /*if (string.IsNullOrEmpty(userId) || accessType != "Admin")
             {
                 return StatusCode(403, "Only admins can perform this action.");
-            }
+            }*/
 
             var video = await _context.Titles
                 .FirstOrDefaultAsync(t => t.TitleId == dto.TitleId && t.PrimaryTitle == dto.PrimaryTitle);

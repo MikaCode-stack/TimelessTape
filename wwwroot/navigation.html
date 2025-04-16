@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Catalogue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+            header input,
+            header select,
+            header button {
+                padding: 5px;
+                margin: 5px;
+            }
+
+        #videoList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px;
+        }
+
+        .video-item {
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            .video-item h3 {
+                margin: 0;
+                font-size: 18px;
+                color: #333;
+            }
+
+            .video-item p {
+                margin: 5px 0;
+            }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Video Catalogue</h1>
+        <div>
+            <input type="text" id="searchInput" placeholder="Search by title" />
+            <select id="sortSelect">
+                <option value="Title">Sort by Title</option>
+                <option value="Price">Sort by Price</option>
+            </select>
+            <button id="searchBtn">Search</button>
+        </div>
+    </header>
+
+    <main>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+            <h2 style="font-size: 24px; color: #333;">🎬 Videos in alphabetical order (Top 10)</h2>
+            <a href="transactions.html"
+               style="padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+                Rent or Return💵
+            </a>
+        </div>
+
+        <div id="videoList">
+            <!-- Videos will be populated here -->
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+            const sortSelect = document.getElementById('sortSelect');
+            const videoList = document.getElementById('videoList');
+
+            // Fetch videos from the backend
+            async function fetchVideos(search = "", sortBy = "PrimaryTitle") {
+                try {
+                    const response = await fetch(`/api/videos?search=${search}&sortBy=${sortBy}`);
+                    const data = await response.json();
+
+                    if (data.videos && data.videos.length > 0) {
+                        displayVideos(data.videos);
+                    } else {
+                        videoList.innerHTML = "No videos found.";
+                    }
+                } catch (error) {
+                    console.error("Error fetching videos:", error);
+                }
+            }
+
+            // Display videos in the UI
+            function displayVideos(videos) {
+                videoList.innerHTML = "";  // Clear previous list
+
+                videos.forEach(video => {
+                    const videoElement = document.createElement('div');
+                    videoElement.classList.add('video-item');
+                    // Check if Price is valid, and use a fallback value if it's not
+                    const price = (typeof video.Price === 'number' && !isNaN(video.Price)) ? video.Price.toFixed(2) : 0;
+
+                    videoElement.innerHTML = `
+                            <h3>${video.primaryTitle}</h3>
+                            <p>ShowId: ${video.titleId}</p>
+                            <p>Genre: ${video.genres}</p>
+                            <p>Release Year: ${video.releaseYear}</p>
+                            <p>Price: $${video.price.toFixed(2)}</p>
+                        `;
+                    videoList.appendChild(videoElement);
+                });
+            }
+
+            // Initial fetch of top 10 videos
+            fetchVideos();
+
+            // Event listener for the search button
+            searchBtn.addEventListener('click', function () {
+                const search = searchInput.value.trim();
+                const sortBy = sortSelect.value;
+                fetchVideos(search, sortBy);
+            });
+        });
+    </script>
+</body>
+
+</html>

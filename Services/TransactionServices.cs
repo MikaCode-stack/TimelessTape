@@ -46,7 +46,7 @@ namespace TimelessTapes.Services
         /// <summary>
         /// Rent a video for a customer.
         /// </summary>
-        public async Task<string> RentVideoAsync(DBHandler context, Customer customer, string titleId)
+        public async Task<string> RentVideoAsync(DBHandler context, User user, string titleId)
         {
             var title = await context.Titles
                 .FirstOrDefaultAsync(t => t.TitleId == titleId);
@@ -56,7 +56,7 @@ namespace TimelessTapes.Services
 
             var existingTransaction = await context.Transactions
                 .FirstOrDefaultAsync(t =>
-                    t.CustomerId == customer.UserId &&
+                    t.CustomerId == user.UserId &&
                     t.TitleId == titleId &&
                     t.Status == RentalStatus.Rented);
 
@@ -65,7 +65,7 @@ namespace TimelessTapes.Services
 
             var transaction = new Transaction
             {
-                CustomerId = customer.UserId,
+                CustomerId = user.UserId,
                 TitleId = titleId,
                 Price = title.Price,
                 Status = RentalStatus.Rented,
@@ -82,32 +82,20 @@ namespace TimelessTapes.Services
         /// <summary>
         /// Process return of a video and calculate fine if overdue.
         /// </summary>
-        public async Task<string> ReturnVideoAsync(DBHandler context, Customer customer, string titleId)
+        public async Task<string> ReturnVideoAsync(DBHandler context, User user, string titleId)
         {
-            var transaction = await context.Transactions
-                .FirstOrDefaultAsync(t =>
-                    t.CustomerId == customer.UserId &&
-                    t.TitleId == titleId &&
-                    t.Status == RentalStatus.Rented);
+            var title = await context.Titles.FirstOrDefaultAsync(t => t.TitleId == titleId);
+            if (title == null)
+                return "Video not found.";
 
-            if (transaction == null)
-                return "No active rental found for this video.";
+            var existingTransaction = await context.Transactions
+                .FirstOrDefaultAsync(t => t.CustomerId == user.UserId && t.TitleId == titleId && t.Status == RentalStatus.Rented);
+            if (existingTransaction == null)
+                return "No rental record found for this video.";
 
-            transaction.Status = RentalStatus.Returned;
-            transaction.ReturnDate = DateTime.UtcNow;
-
-            var fine = CalculateFine(transaction);
-            if (fine > 0)
-            {
-                var lateFee = new Latefee
-                {
-                    TransactionId = transaction.TransactionId,
-                    Amount = fine,
-                    FeeDate = DateTime.UtcNow
-                };
-                context.LateFees.Add(lateFee);
-            }
-
+            // Update the transaction status
+            existingTransaction.Status = RentalStatus.Returned;
+            existingTransaction.ReturnDate = DateTime.UtcNow;
             await context.SaveChangesAsync();
 
             return "Video returned successfully.";
@@ -129,25 +117,7 @@ namespace TimelessTapes.Services
             return 0;
         }
 
-        /// <summary>
-        /// Calculates total fines for all returned and overdue transactions by a customer.
-        /// </summary>
-        public static double CalculateFines(DBHandler context, int customerId)
-        {
-            var transactions = context.Transactions
-                .Where(t => t.CustomerId == customerId && t.Status == RentalStatus.Returned && t.ReturnDate.HasValue)
-                .ToList();
-
-            double totalFine = 0;
-
-            foreach (var t in transactions)
-            {
-                totalFine += CalculateFine(t);
-            }
-
-            return totalFine;
-        }
-
+   
         /// <summary>
         /// Generates a printable receipt for a transaction.
         /// </summary>
@@ -163,5 +133,7 @@ namespace TimelessTapes.Services
             $"Fine:           ${t.ExcessFines:F2}\n" +
             $"Status:         {t.Status}\n" +
             $"----------------";
+
+       
     }
 }

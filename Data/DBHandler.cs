@@ -30,7 +30,7 @@ namespace TimelessTapes.Data
             modelBuilder.Entity<User>().Property(u => u.CreatedAt).HasColumnName("createdAt").HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();//Gets the current date and time(Timestamp)
             modelBuilder.Entity<User>()
                 .HasDiscriminator<string>("accessType")
-                .HasValue<User>("User")
+                .HasValue<User>("Admin")
                 .HasValue<Customer>("Customer");
 
             // AdminLogs Table

@@ -1,6 +1,6 @@
 ﻿namespace TimelessTapes.Models
 {
-    public class AddVideoDto
+    public class AddVideoDTO
     {
         public string TitleId { get; set; }
         public string TitleType { get; set; }

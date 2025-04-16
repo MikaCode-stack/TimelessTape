@@ -5,6 +5,7 @@ using TimelessTapes.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Core;
+
 //Controller for user registration and login
 namespace TimelessTapes.Controllers
 {
@@ -68,7 +69,13 @@ namespace TimelessTapes.Controllers
             HttpContext.Session.SetString("AccessType", user.AccessType);
 
 
-            return Ok(new { Message = "User logged in successfully." });
+            return Ok(new
+            {
+                Message = "User logged in successfully.",
+                UserId = user.UserId,
+                AccessType = user.AccessType
+            });
+
         }
 
         // POST: api/user/logout => Allows user to logout and clear session data

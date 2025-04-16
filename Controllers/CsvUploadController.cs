@@ -70,7 +70,7 @@ public class CsvUploadController : ControllerBase
 
 
 
-                return Ok(new { Message = "CSV uploaded and processed successfully.", records.Count });
+                return Ok(new { Message = "CSV uploaded and processed successfully.", recordsCount = records.Count });
             }
         }
         catch (CsvHelperException ex)
