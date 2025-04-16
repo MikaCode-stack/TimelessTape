@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DBHandler>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TimelessTapeDb")));
 
+builder.Services.AddScoped<TimelessTapes.Services.TransactionService>();
+
 // Add other necessary services
 builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();

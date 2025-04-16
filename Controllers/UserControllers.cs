@@ -5,6 +5,7 @@ using TimelessTapes.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 
 //Controller for user registration and login
 namespace TimelessTapes.Controllers
@@ -48,6 +49,8 @@ namespace TimelessTapes.Controllers
             // For security reasons,cpassword hash and salt are not returned, only confirmation message is returned
             return Ok(new { Message = "User registered successfully." });
         }
+
+        [AllowAnonymous]
         // POST: api/user/login => Allows user to login and save session data for the logged-in user
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
